@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from models.user import User
 from models.meal import Meal
 from database import db
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, login_required, logout_user
 import bcrypt
 
 app = Flask(__name__)
@@ -33,6 +33,12 @@ def login():
             return jsonify({"message": "Autenticação realizada com sucesso!"})
         
     return jsonify({"message": "Credenciais inválidas!"}), 400
+
+@app.route('/logout', methods=['GET'])
+@login_required
+def logout():
+    logout_user()
+    return jsonify({"message": "Logout efetuado com sucesso!"})    
 
 if __name__ == "__main__":
     app.run(debug=True)
