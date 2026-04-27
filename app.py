@@ -98,5 +98,21 @@ def delete_user(user_id):
     
     return jsonify({"message": "Usuário não encontrado!"}), 404
 
+@app.route('/meal', methods=['POST'])
+@login_required
+def create_meal():
+    data = request.json
+    meal_name = data.get('name')
+    meal_description = data.get('description')
+    date_meal = data.get('date_meal')
+
+    if meal_name and meal_description and date_meal:
+        meal = Meal(name=meal_name, description=meal_description, date_meal=date_meal, user_id=current_user.id)
+        db.session.add(meal)
+        db.session.commit()
+        return jsonify({"message": "Refeição adicionada com sucesso!"})
+    
+    return jsonify({"message": "Dados inválidos!"})
+
 if __name__ == "__main__":
     app.run(debug=True)
