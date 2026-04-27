@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from models.user import User
 from models.meal import Meal
 from database import db
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import bcrypt
 
 app = Flask(__name__)
@@ -26,7 +26,7 @@ def login():
     password = data.get('password')
 
     if username and password:
-        user = User.query.filter_by(username=username)
+        user = User.query.filter_by(username=username).first()
 
         if user and bcrypt.checkpw(str.encode(password), str.encode(user.password)):
             login_user(user)
@@ -56,6 +56,7 @@ def create_user():
     return jsonify({"message": "Dados inválidos!"}), 400
 
 @app.route('/user/<int:user_id>', methods=['GET'])
+@login_required
 def read_user(user_id):
     user = User.query.get(user_id)
 
@@ -63,6 +64,21 @@ def read_user(user_id):
         return jsonify({"username": user.username})
     
     return jsonify({"message": "Usuário não encontrado!"}), 404
+
+@app.route('/user', methods=['PUT'])
+@login_required
+def update_user():
+    user = current_user
+    data = request.json
+    new_password = data.get('password')
+
+    if new_password:
+        hashed_new_password = bcrypt.hashpw(str.encode(new_password), bcrypt.gensalt())
+        user.password = hashed_new_password
+        db.session.commit()
+        return jsonify({"message": f"Usuário {current_user.id} atualizado com sucesso!"})
+    
+    return jsonify({"message": "Dados inválidos"})
 
 if __name__ == "__main__":
     app.run(debug=True)
