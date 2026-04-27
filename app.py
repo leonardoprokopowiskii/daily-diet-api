@@ -80,5 +80,23 @@ def update_user():
     
     return jsonify({"message": "Dados inválidos"})
 
+@app.route('/user/<int:user_id>', methods=['DELETE'])
+@login_required
+def delete_user(user_id):
+    user = User.query.get(user_id)
+
+    if current_user.role != 'admin':
+        return jsonify({"message": "Operação não permitida!"}), 403
+
+    if user_id == current_user.id:
+        return jsonify({"message": "Não foi permitido deletar!"}), 403
+    
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({"message": f"Usuário {user_id} deletado com sucesso!"})
+    
+    return jsonify({"message": "Usuário não encontrado!"}), 404
+
 if __name__ == "__main__":
     app.run(debug=True)
