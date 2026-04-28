@@ -115,6 +115,7 @@ def create_meal():
     return jsonify({"message": "Dados inválidos!"}), 400
 
 @app.route('/meal/<int:meal_id>', methods=['PUT'])
+@login_required
 def update_meal(meal_id):
     data = request.json
     new_name = data.get('name')
@@ -131,6 +132,18 @@ def update_meal(meal_id):
         return jsonify({"message": "Refeição atualizada com sucesso!"})
     
     return jsonify({"message": "Dados inválidos!"}), 400
+
+@app.route('/meal/<int:meal_id>', methods=['DELETE'])
+@login_required
+def delete_meal(meal_id):
+    meal = Meal.query.get(meal_id)
+
+    if meal:
+        db.session.delete(meal)
+        db.session.commit()
+        return jsonify({"message": "Refeição deletada com sucesso!"})
+    
+    return jsonify({"message": "Refeição não encontrada!"}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
