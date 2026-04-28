@@ -39,7 +39,7 @@ API RESTful para controle de dieta diária, desenvolvida com Flask como parte do
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/daily-diet-api.git
+git clone https://github.com/leonardoprokopowiskii/daily-diet-api.git
 cd daily-diet-api
 ```
 
