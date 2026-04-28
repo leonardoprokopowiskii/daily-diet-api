@@ -114,6 +114,20 @@ def create_meal():
     
     return jsonify({"message": "Dados inválidos!"}), 400
 
+@app.route('/meal', methods=['GET'])
+@login_required
+def read_meals():
+    meals = Meal.query.filter_by(user_id=current_user.id).all()
+
+    return [
+        {
+            "id": meal.id,
+            "name": meal.name,
+            "date": meal.date_meal
+        }
+        for meal in meals
+    ]
+
 @app.route('/meal/<int:meal_id>', methods=['PUT'])
 @login_required
 def update_meal(meal_id):
