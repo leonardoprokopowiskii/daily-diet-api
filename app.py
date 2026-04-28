@@ -123,10 +123,28 @@ def read_meals():
         {
             "id": meal.id,
             "name": meal.name,
+            "description": meal.description,
             "date": meal.date_meal
         }
         for meal in meals
     ]
+
+@app.route('/meal/<int:meal_id>', methods=['GET'])
+@login_required
+def read_meal(meal_id):
+    meal = Meal.query.get(meal_id)
+
+    if meal:
+        return [
+            {
+                "id": meal.id,
+                "name": meal.name,
+                "description": meal.description,
+                "date": meal.date_meal
+            }
+        ]
+    
+    return jsonify({"message": "Refeição não encontrada!"}), 404
 
 @app.route('/meal/<int:meal_id>', methods=['PUT'])
 @login_required
