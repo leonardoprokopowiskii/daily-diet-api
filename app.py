@@ -78,7 +78,7 @@ def update_user():
         db.session.commit()
         return jsonify({"message": f"Usuário {current_user.id} atualizado com sucesso!"})
     
-    return jsonify({"message": "Dados inválidos"})
+    return jsonify({"message": "Dados inválidos"}), 400
 
 @app.route('/user/<int:user_id>', methods=['DELETE'])
 @login_required
@@ -112,7 +112,25 @@ def create_meal():
         db.session.commit()
         return jsonify({"message": "Refeição adicionada com sucesso!"})
     
-    return jsonify({"message": "Dados inválidos!"})
+    return jsonify({"message": "Dados inválidos!"}), 400
+
+@app.route('/meal/<int:meal_id>', methods=['PUT'])
+def update_meal(meal_id):
+    data = request.json
+    new_name = data.get('name')
+    new_description = data.get('description')
+    new_date = data.get('date_meal')
+    meal = Meal.query.get(meal_id)
+
+    if new_name and new_description and new_date:
+        meal.name = new_name
+        meal.description = new_description
+        meal.date_meal = new_date
+        db.session.commit()
+        
+        return jsonify({"message": "Refeição atualizada com sucesso!"})
+    
+    return jsonify({"message": "Dados inválidos!"}), 400
 
 if __name__ == "__main__":
     app.run(debug=True)
